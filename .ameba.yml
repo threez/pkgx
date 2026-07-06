@@ -1,0 +1,21 @@
+# Run `ameba --only Lint/NotNil` for details
+Lint/NotNil:
+  Description: Identifies usage of `not_nil!` calls
+  Excluded:
+  - spec/*
+  - spec/**/*
+  Enabled: true
+  Severity: Warning
+
+# `db` is the established convention for a pkg database handle throughout
+# this codebase and the freebsd shard it wraps — allow it everywhere, not
+# just in specs, rather than force a more verbose name at every call site.
+Naming/BlockParameterName:
+  AllowedNames:
+  - db
+
+# Spec fixtures are standalone programs compiled and run by a spec, not
+# specs themselves, so they don't carry the `_spec` suffix.
+Lint/SpecFilename:
+  Excluded:
+  - spec/**/fixtures/**/*

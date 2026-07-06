@@ -1,0 +1,33 @@
+name: spec
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  spec:
+    runs-on: ubuntu-latest
+    name: FreeBSD 15.1 spec
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run specs in a FreeBSD VM
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: "15.1"
+          usesh: true
+          # Install the Crystal toolchain. shard.yml requires Crystal >= 1.19.1;
+          # the FreeBSD `crystal` package provides a compatible version.
+          # pkgx binds libpkg (FreeBSD's package manager library) via the
+          # freebsd shard, so specs must run on real FreeBSD, not Linux.
+          prepare: |
+            pkg install -y crystal shards
+          run: |
+            set -e
+            shards install
+            make fmtcheck
+            make lint
+            make spec
